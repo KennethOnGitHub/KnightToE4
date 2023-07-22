@@ -17,6 +17,7 @@ public class MyBot : IChessBot
 
         Move forwardestmove = moves[0];
         int bestforwardness = 0;
+        int bestmiddleness = 0;
         foreach (Move move in moves)
         {
             int forwardness = move.TargetSquare.Rank;
@@ -24,13 +25,20 @@ public class MyBot : IChessBot
             {
                 forwardness = 7 - forwardness;
             }
+            int middleness = Math.Abs(7 - 2 * move.TargetSquare.File);
 
             if (forwardness > bestforwardness)
             {
                 bestforwardness = forwardness;
+                bestmiddleness = middleness;
                 forwardestmove = move;
-
             }
+            else if (middleness > bestmiddleness & forwardness == bestforwardness) {
+                bestforwardness = forwardness;
+                bestmiddleness = middleness;
+                forwardestmove = move;
+            }
+            //above is doo doo fucking shit, terrible code but it is near bed time and I am gonna hon snoo snoo snoo
         }
         return forwardestmove;
     }
