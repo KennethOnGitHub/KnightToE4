@@ -38,16 +38,15 @@ public class MyBot : IChessBot
             }
 
         }
-        Console.WriteLine(bestDevelopmentIncrease);
-        Console.WriteLine(bestmove.MovePieceType);
         return bestmove;
     }
 
-    private int CalculateCentredness(Board board, Square square) //this will always return an int but I am too dumb to figure out how to tell it that
+    private int CalculateCentredness(Board board, Square square)
     {
-        double centreness = 3.5 - Math.Abs(square.Rank - 3.5);
+        int rankMiddleness = (int)(3.5 - Math.Abs(square.Rank - 3.5));
+        int fileMiddleness = (int)(3.5 - Math.Abs(square.File- 3.5));
 
-        return (int)centreness;
+        return rankMiddleness + fileMiddleness;
     }
 
 
