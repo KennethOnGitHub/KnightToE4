@@ -10,7 +10,7 @@ public class MyBot : IChessBot
         Move[] captures = board.GetLegalMoves(true);
         Random rnd = new Random();
 
-        if (captures.Length > 0)
+        if (captures.Length > 0) //if piece can be captured then it is (capture has highest importance)
         {
             return captures[0];
         }
@@ -20,10 +20,10 @@ public class MyBot : IChessBot
         int bestmiddleness = 0;
         foreach (Move move in moves)
         {
-            int forwardness = move.TargetSquare.Rank;
+            int forwardness = move.TargetSquare.Rank; //Sets forwardness to Rank of piece. Rank is the row (from 0 to 7, starting from the bottom of the board)
             if (!BotIsWhite)
             {
-                forwardness = 7 - forwardness;
+                forwardness = 7 - forwardness; //reverse funtion if the bot is playing as black
             }
             int middleness = Math.Abs(7 - 2 * move.TargetSquare.File);
 
