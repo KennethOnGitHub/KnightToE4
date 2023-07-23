@@ -8,8 +8,7 @@ public class MyBot : IChessBot
 {
     // Piece values: null, pawn, knight, bishop, rook, queen, king
     int[] pieceValues = { 0, 100, 300, 300, 500, 900, 10000 };
-    
-
+    bool BotIsWhite = board.IsWhiteToMove;
 
     public Move Think(Board board, Timer timer)
     {
@@ -41,7 +40,7 @@ public class MyBot : IChessBot
     
     private Move ForwardestMove(Board board, Move[] moves)
     {
-        bool BotIsWhite = board.IsWhiteToMove;
+        
         int bestforwardness = 0;
         Move forwardestMove = moves[0];
 
@@ -67,8 +66,9 @@ public class MyBot : IChessBot
     private Move CentreObjetive(Move[] moves)
     {
 
-        Dictionary<Move,int> allPieceValues = new Dictionary<Move, int>(); //creates a dictionary where the key is of type Move and value is of type int
-        //USE 2D ARRAY SO THAT U CAN THEN USE ITERATOR VARIABLE TO SORT IT BY POINT VALUE, THEN DO THE LARGEST POINT MOVE :3
+        Dictionary<Move,int> allPieceValues = new Dictionary<Move, int>(); //creates a dictionary where the key is of type Move and value is of type 
+
+        //look at this fucking idiot -> USE 2D ARRAY SO THAT U CAN THEN USE ITERATOR VARIABLE TO SORT IT BY POINT VALUE, THEN DO THE LARGEST POINT MOVE :3
 
         //j is used first because i implemented this after and it kinda makes sense (it doesn't)
         for (int j = 0; j < moves.Length; j++) //iterats and appends each move to the array, with null for each value (is added later -> DO THIS ALL AT ONCE 
@@ -89,16 +89,19 @@ public class MyBot : IChessBot
             
             Console.WriteLine(PieceVal); //DEBUG -> REMOVE LATER
 
+            i += 1;
+        }
+
+        foreach(Move move in moves) //must be a seperate foreach, because the "allPieceValues" dict must have all its values before this logic is run
+        {
             //use bubblesort dumbass (will add later if this fucking works :£)
-            if (allPieceValues[i + 1] > allPieceValues[i])
+            if (allPieceValues[i + 1] > allPieceValues[move]) //FIGURE OUT HOW TO GET "move + 1" then ur done :£
             {
                 //swapping values logic - we are sorting the array here
                 int temp1 = allPieceValues[i + 1];
-                allPieceValues(i + 1) = allPieceValues[i];
-                allPieceValues(i) = temp1;
+                allPieceValues(i + 1) = allPieceValues[move];
+                allPieceValues(move) = temp1;
             }
-
-            i += 1;
         }
 
         mostDevelopedMove = allPieceValues[-1]; //gives the highest scoring move here
