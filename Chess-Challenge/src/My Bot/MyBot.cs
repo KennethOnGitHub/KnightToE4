@@ -20,11 +20,14 @@ public class MyBot : IChessBot
         int bestmiddleness = 0;
         foreach (Move move in moves)
         {
+            //sets the forwardness to the rank, "inverts" forwardness if black
             int forwardness = move.TargetSquare.Rank;
             if (!BotIsWhite)
             {
                 forwardness = 7 - forwardness;
             }
+
+
             int middleness = Math.Abs(7 - 2 * move.TargetSquare.File);
 
             if (forwardness > bestforwardness)
