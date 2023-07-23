@@ -1,8 +1,15 @@
 ﻿using ChessChallenge.API;
 using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Numerics;
 
 public class MyBot : IChessBot
 {
+    // Piece values: null, pawn, knight, bishop, rook, queen, king
+    int[] pieceValues = { 0, 100, 300, 300, 500, 900, 10000 };
+    
+
 
     public Move Think(Board board, Timer timer)
     {
@@ -17,7 +24,8 @@ public class MyBot : IChessBot
 
 
         //Move nextMove = RngMove(moves);
-        Move nextMove = ForwardestMove(board, moves);
+        //Move nextMove = ForwardestMove(board, moves);
+        Move nextMove = CentreObjetive(moves);
 
         return nextMove;
 
@@ -58,14 +66,43 @@ public class MyBot : IChessBot
 
     private Move CentreObjetive(Move[] moves)
     {
-        
 
+        Dictionary<Move,int> allPieceValues = new Dictionary<Move, int>(); //creates a dictionary where the key is of type Move and value is of type int
+        //USE 2D ARRAY SO THAT U CAN THEN USE ITERATOR VARIABLE TO SORT IT BY POINT VALUE, THEN DO THE LARGEST POINT MOVE :3
+
+        //j is used first because i implemented this after and it kinda makes sense (it doesn't)
+        for (int j = 0; j < moves.Length; j++) //iterats and appends each move to the array, with null for each value (is added later -> DO THIS ALL AT ONCE 
+        {
+            allPieceValues.Add(moves[j], 0);
+        }
+
+        int i = 0;
         foreach (Move move in moves)
         {
-            float centreness = 3.5 - Abs(move.TargetSquare.Rank; - 3.5);
             
+            Move mostDevelopedMove = moves[0];
 
+            double developmentVal = 3.5 - Math.Abs(move.TargetSquare.Rank - 3.5); //formula that gives "centre" ranks (rows) a higher value, and outside "ranks" a lower one (from 0 - 3)
+            double PieceVal = developmentVal * pieceValues[(int)move.MovePieceType];
+
+            allPieceValues(i) = PieceVal; //adds value to the dict, at corresponding key 
+            
+            Console.WriteLine(PieceVal); //DEBUG -> REMOVE LATER
+
+            //use bubblesort dumbass (will add later if this fucking works :£)
+            if (allPieceValues[i + 1] > allPieceValues[i])
+            {
+                //swapping values logic - we are sorting the array here
+                int temp1 = allPieceValues[i + 1];
+                allPieceValues(i + 1) = allPieceValues[i];
+                allPieceValues(i) = temp1;
+            }
+
+            i += 1;
         }
+
+        mostDevelopedMove = allPieceValues[-1]; //gives the highest scoring move here
+        return mostDevelopedMove;
     }
 
 }
