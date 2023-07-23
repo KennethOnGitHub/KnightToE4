@@ -3,6 +3,7 @@ using System;
 
 public class MyBot : IChessBot
 {
+    int[] pieceValues = { 0, 1, 3, 3, 5, 9, 10000 };
     public Move Think(Board board, Timer timer)
     {
         bool BotIsWhite = board.IsWhiteToMove;
@@ -10,39 +11,44 @@ public class MyBot : IChessBot
         Move[] captures = board.GetLegalMoves(true);
         Random rnd = new Random();
 
+        /*
         if (captures.Length > 0) //if piece can be captured then it is (capture has highest importance)
         {
             return captures[0];
         }
+        */
 
         Move bestmove = moves[0];
-        int bestforwardness = 0;
-        int bestmiddleness = 0;
+        double bestDevelopmentIncrease = 0;
         foreach (Move move in moves)
         {
-            int forwardness = move.TargetSquare.Rank; //Sets forwardness to Rank of piece. Rank is the row (from 0 to 7, starting from the bottom of the board)
-            if (!BotIsWhite)
+            int startCentreness = CalculateCentredness(board, move.StartSquare);
+            int targetCentreness = CalculateCentredness(board, move.TargetSquare);
+
+            int pieceVal = pieceValues[(int)(move.MovePieceType)];
+            int pieceDevelopment = pieceVal * startCentreness;
+            int newDevelopment = pieceVal * targetCentreness;
+
+            int developmentIncrease = newDevelopment - pieceDevelopment;
+
+            if (developmentIncrease > bestDevelopmentIncrease)
             {
-                forwardness = 7 - forwardness; //reverse funtion if the bot is playing as black
-            }
-
-
-            int middleness = Math.Abs(7 - 2 * move.TargetSquare.File);
-
-            if (forwardness > bestforwardness)
-            {
-                bestforwardness = forwardness;
-                bestmiddleness = middleness;
                 bestmove = move;
+                bestDevelopmentIncrease = newDevelopment;
             }
-            else if (middleness > bestmiddleness & forwardness == bestforwardness) {
-                bestforwardness = forwardness;
-                bestmiddleness = middleness;
-                bestmove = move;
-            }
-            //above is doo doo fucking shit, terrible code but it is near bed time and I am gonna hon snoo snoo snoo
 
         }
+        Console.WriteLine(bestDevelopmentIncrease);
+        Console.WriteLine(bestmove.MovePieceType);
         return bestmove;
     }
+
+    private int CalculateCentredness(Board board, Square square) //this will always return an int but I am too dumb to figure out how to tell it that
+    {
+        double centreness = 3.5 - Math.Abs(square.Rank - 3.5);
+
+        return (int)centreness;
+    }
+
+
 }
