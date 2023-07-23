@@ -83,13 +83,16 @@ public class MyBot : IChessBot
 
         foreach (Move move in moves)
         {
-        
-            double developmentVal = 3.5 - Math.Abs(move.TargetSquare.Rank - 3.5); //formula that gives "centre" ranks (rows) a higher value, and outside "ranks" a lower one (from 0 - 3)
-            double PieceVal = developmentVal * pieceValues[(int)move.MovePieceType];
+            //legacy formula: (3.5 - Math.Abs(move.TargetSquare.Rank - 3.5))
+            double rankDevVal = -(move.TargetSquare.Rank)^2 + 7 * TargetSquare.Rank; //formula that gives "centre" ranks (rows) a higher value, and outside "ranks" a lower one (from 0 - 3)
+            double fileDevVal = -(move.TargetSquare.File)^2 + 7 * TargetSquare.File; 
+            //yea i dont think this worky
 
-            allPieceValues[move] = PieceVal; //adds value to the dict, at corresponding key 
+            double pieceVal = (rankDevVal * fileDevVal) * pieceValues[(int)move.MovePieceType];
+
+            allPieceValues[move] = pieceVal; //adds value to the dict, at corresponding key 
             
-            Console.WriteLine(PieceVal); //DEBUG -> REMOVE LATER
+            Console.WriteLine(pieceVal); //DEBUG -> REMOVE LATER
 
         }
 
