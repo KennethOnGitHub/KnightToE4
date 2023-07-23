@@ -27,7 +27,8 @@ public class MyBot : IChessBot
 
             int pieceVal = pieceValues[(int)(move.MovePieceType)];
             int pieceDevelopment = pieceVal * startCentreness;
-            int newDevelopment = pieceVal * targetCentreness;
+            //int newDevelopment = pieceVal * targetCentreness;
+            int newDevelopment = targetCentreness;
 
             int developmentIncrease = newDevelopment - pieceDevelopment;
 
@@ -38,6 +39,7 @@ public class MyBot : IChessBot
             }
 
         }
+        Console.WriteLine(bestDevelopmentIncrease);
         return bestmove;
     }
 
@@ -46,7 +48,8 @@ public class MyBot : IChessBot
         int rankMiddleness = (int)(3.5 - Math.Abs(square.Rank - 3.5));
         int fileMiddleness = (int)(3.5 - Math.Abs(square.File- 3.5));
 
-        return rankMiddleness + fileMiddleness;
+        return rankMiddleness * fileMiddleness;
+        //problem is this causes it to move things near the edge as that leads to the same development increase (1 -> 3 and 4 -> 6 even though the latter is better)
     }
 
 
