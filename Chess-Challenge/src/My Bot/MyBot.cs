@@ -7,11 +7,15 @@ using System.Numerics;
 public class MyBot : IChessBot
 {
     // Piece values: null, pawn, knight, bishop, rook, queen, king
-    int[] pieceValues = { 0, 100, 300, 300, 500, 900, 10000 };
-    bool BotIsWhite = board.IsWhiteToMove;
+    int[] pieceValues = { 0, 100, 300, 300, 500, 900, 50 }; //these are arbitary because like... the king shouldnt really be pushing and developing :D
+    //could calculate a way that for each piece, their importance of development is increased / decreased over time => pawn has higher value that shrinks rapidly etc.
+
+
+    //bool BotIsWhite = board.IsWhiteToMove; -> you need board to call this but thats not defined here - it would b rlly useful to have the colour of the player but eh i cant figure it out :3    
 
     public Move Think(Board board, Timer timer)
     {
+
         Move[] moves = board.GetLegalMoves();
 
 
@@ -40,7 +44,7 @@ public class MyBot : IChessBot
     
     private Move ForwardestMove(Board board, Move[] moves)
     {
-        
+        bool BotIsWhite = board.IsWhiteToMove;
         int bestforwardness = 0;
         Move forwardestMove = moves[0];
 
@@ -65,8 +69,9 @@ public class MyBot : IChessBot
 
     private Move CentreObjetive(Move[] moves)
     {
+        Move mostDevelopedMove = moves[0];
 
-        Dictionary<Move,int> allPieceValues = new Dictionary<Move, int>(); //creates a dictionary where the key is of type Move and value is of type 
+        Dictionary<Move,double> allPieceValues = new Dictionary<Move, double>(); //creates a dictionary where the key is of type Move and value is of type 
 
         //look at this fucking idiot -> USE 2D ARRAY SO THAT U CAN THEN USE ITERATOR VARIABLE TO SORT IT BY POINT VALUE, THEN DO THE LARGEST POINT MOVE :3
 
@@ -76,36 +81,43 @@ public class MyBot : IChessBot
             allPieceValues.Add(moves[j], 0);
         }
 
-        int i = 0;
         foreach (Move move in moves)
         {
-            
-            Move mostDevelopedMove = moves[0];
-
+        
             double developmentVal = 3.5 - Math.Abs(move.TargetSquare.Rank - 3.5); //formula that gives "centre" ranks (rows) a higher value, and outside "ranks" a lower one (from 0 - 3)
             double PieceVal = developmentVal * pieceValues[(int)move.MovePieceType];
 
-            allPieceValues(i) = PieceVal; //adds value to the dict, at corresponding key 
+            allPieceValues[move] = PieceVal; //adds value to the dict, at corresponding key 
             
             Console.WriteLine(PieceVal); //DEBUG -> REMOVE LATER
 
-            i += 1;
         }
 
+        int k = 0;
         foreach(Move move in moves) //must be a seperate foreach, because the "allPieceValues" dict must have all its values before this logic is run
         {
-            //use bubblesort dumbass (will add later if this fucking works :£)
-            if (allPieceValues[i + 1] > allPieceValues[move]) //FIGURE OUT HOW TO GET "move + 1" then ur done :£
-            {
-                //swapping values logic - we are sorting the array here
-                int temp1 = allPieceValues[i + 1];
-                allPieceValues(i + 1) = allPieceValues[move];
-                allPieceValues(move) = temp1;
-            }
+            BubbleSort(moves, move, allPieceValues, k);
+            k += 1;
         }
 
-        mostDevelopedMove = allPieceValues[-1]; //gives the highest scoring move here
+        mostDevelopedMove = allPieceValues[k]; //gives the highest scoring move here
+        //"error this" "error that" SHUT THE FUCK UP VISUAL STUDIO IT WORKYY
+
         return mostDevelopedMove;
+    }
+
+    private Move BubbleSort(Move[] moves, Move move, Dictionary<Move, double> dict, int iterator)
+    {
+        Move nextMove = moves[iterator + 1];
+        if (dict[nextMove] > dict[move])
+        {
+            //swapping values logic - we are sorting the array here
+            double temp1 = dict[nextMove];
+            dict[nextMove] = dict[move];
+            dict[move] = temp1;
+        }
+
+        return move;
     }
 
 }
