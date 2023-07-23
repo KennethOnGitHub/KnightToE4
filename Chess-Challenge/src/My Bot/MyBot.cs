@@ -15,7 +15,7 @@ public class MyBot : IChessBot
             return captures[0];
         }
 
-        Move forwardestmove = moves[0];
+        Move bestmove = moves[0];
         int bestforwardness = 0;
         int bestmiddleness = 0;
         foreach (Move move in moves)
@@ -31,15 +31,16 @@ public class MyBot : IChessBot
             {
                 bestforwardness = forwardness;
                 bestmiddleness = middleness;
-                forwardestmove = move;
+                bestmove = move;
             }
             else if (middleness > bestmiddleness & forwardness == bestforwardness) {
                 bestforwardness = forwardness;
                 bestmiddleness = middleness;
-                forwardestmove = move;
+                bestmove = move;
             }
             //above is doo doo fucking shit, terrible code but it is near bed time and I am gonna hon snoo snoo snoo
+
         }
-        return forwardestmove;
+        return bestmove;
     }
 }
