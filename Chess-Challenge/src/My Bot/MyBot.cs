@@ -25,6 +25,8 @@ public class MyBot : IChessBot
             {
                 forwardness = 7 - forwardness; //reverse funtion if the bot is playing as black
             }
+
+
             int middleness = Math.Abs(7 - 2 * move.TargetSquare.File);
 
             if (forwardness > bestforwardness)
