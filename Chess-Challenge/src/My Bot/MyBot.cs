@@ -9,14 +9,12 @@ public class MyBot : IChessBot
         Move[] moves = board.GetLegalMoves();
 
 
-        //rng 
-
-
         //take each piece and assign it an arbitary value to get to, based on colour, piece type, and position.
         //first check colour of piece (only have to check 1 for simplicity)
         //then, check type of piece, and give it the "line" to get to
         //add a value if closer to the middle, otherwise keep same
         //when it gets here, default to taking pieces with "non-centre" pieces
+
 
         //Move nextMove = RngMove(moves);
         Move nextMove = ForwardestMove(board, moves);
@@ -25,14 +23,15 @@ public class MyBot : IChessBot
 
     }
 
-    public Move RngMove(Move[] moves)
+    private Move RngMove(Move[] moves)
     {
         Random r = new();
         Move nextMove = moves[r.Next(moves.Length)];
 
         return nextMove;
     }
-    public Move ForwardestMove(Board board, Move[] moves)
+    
+    private Move ForwardestMove(Board board, Move[] moves)
     {
         bool BotIsWhite = board.IsWhiteToMove;
         int bestforwardness = 0;
@@ -56,4 +55,17 @@ public class MyBot : IChessBot
         return forwardestMove;
 
     }
+
+    private Move CentreObjetive(Move[] moves)
+    {
+        
+
+        foreach (Move move in moves)
+        {
+            float centreness = 3.5 - Abs(move.TargetSquare.Rank; - 3.5);
+            
+
+        }
+    }
+
 }
