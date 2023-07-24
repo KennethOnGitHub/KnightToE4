@@ -14,8 +14,8 @@ public class MyBot : IChessBot
         double bestDevelopmentIncrease = 0;
         foreach (Move move in moves)
         {
-            int startCentreness = CalculateCentredness(board, move.StartSquare);
-            int targetCentreness = CalculateCentredness(board, move.TargetSquare);
+            int startCentreness = CalculateCentredness(move.StartSquare);
+            int targetCentreness = CalculateCentredness(move.TargetSquare);
 
             int pieceVal = pieceValues[(int)(move.MovePieceType)];
             //int pieceDevelopment = pieceVal * startCentreness;
@@ -36,7 +36,7 @@ public class MyBot : IChessBot
         return bestmove;
     }
 
-    private int CalculateCentredness(Board board, Square square)
+    private int CalculateCentredness(Square square)
     {
         int rankMiddleness = (int)(3.5 - Math.Abs(square.Rank - 3.5)); //Closeness to the middle in terms of ranks
         int fileMiddleness = (int)(3.5 - Math.Abs(square.File- 3.5)); //Closeness to middle in terms of files
@@ -49,7 +49,7 @@ public class MyBot : IChessBot
         as moving a piece in the middle to the centre*/
         //Issue? The AI will never develop pieces on the leftmost and rightmost side of the board, as the increase in development score is 0.
         
-        return rankMiddleness * fileMiddleness;
+        return Centreness;
     }
 
 
