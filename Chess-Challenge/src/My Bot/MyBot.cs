@@ -3,7 +3,6 @@ using System;
 
 public class MyBot : IChessBot
 {
-    int[] pieceValues = { 0, 1, 3, 3, 5, 9, 10000 };
     public Move Think(Board board, Timer timer)
     {
         bool BotIsWhite = board.IsWhiteToMove;
@@ -14,26 +13,28 @@ public class MyBot : IChessBot
         double bestDevelopmentIncrease = 0;
         foreach (Move move in moves)
         {
-            int startCentreness = CalculateCentredness(move.StartSquare);
-            int targetCentreness = CalculateCentredness(move.TargetSquare);
-
-            int pieceVal = pieceValues[(int)(move.MovePieceType)];
-            //int pieceDevelopment = pieceVal * startCentreness;
-            //int newDevelopment = pieceVal * targetCentreness;
-            int initialDevelopment = startCentreness;
-            int newDevelopment = targetCentreness;
-
-            int developmentIncrease = newDevelopment - initialDevelopment;
-
+            int developmentIncrease = CalculateDevelopmentIncrease(move);
             if (developmentIncrease > bestDevelopmentIncrease)
             {
                 bestmove = move;
-                bestDevelopmentIncrease = newDevelopment;
+                bestDevelopmentIncrease = developmentIncrease;
             }
 
         }
         Console.WriteLine(bestDevelopmentIncrease);
         return bestmove;
+    }
+
+    private int CalculateDevelopmentIncrease(Move move)
+    {
+        int startCentreness = CalculateCentredness(move.StartSquare);
+        int targetCentreness = CalculateCentredness(move.TargetSquare);
+
+        int initialDevelopment = startCentreness;
+        int newDevelopment = targetCentreness;
+        //Currently, development is only calculated based on how "central" the pieces are, it does not take the piece into account
+
+        return newDevelopment - initialDevelopment;
     }
 
     private int CalculateCentredness(Square square)
