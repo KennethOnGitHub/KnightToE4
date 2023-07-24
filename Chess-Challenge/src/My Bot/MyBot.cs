@@ -87,11 +87,9 @@ public class MyBot : IChessBot
 
     private double Centreness(Square square) //formulas are subject to change
     {
-        //possible quadratic = x^2  + 7x (gives a similar curve to other formula)
-        //double rankVal = 3.5 - Math.Abs(square.Rank - 3.5);
-        //double fileVal = 3.5 - Math.Abs(square.File - 3.5);
-        double rankVal = (square.Rank)^2 + (7 * square.Rank);
-        double fileVal = (square.File) ^ 2 + (7 * square.File);
+        //formula found by tree that is good (never ever trust me to make those things jesus)
+        double rankVal = 3.5 - Math.Abs(square.Rank - 3.5);
+        double fileVal = 3.5 - Math.Abs(square.File - 3.5);
 
         return rankVal * fileVal;
     }
