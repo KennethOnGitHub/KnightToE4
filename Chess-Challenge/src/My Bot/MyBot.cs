@@ -16,13 +16,11 @@ public class MyBot : IChessBot
 
         Move[] moves = board.GetLegalMoves();
 
-
         //Move nextMove = RngMove(moves);
         //Move nextMove = ForwardestMove(board, moves);
         Move nextMove = CentreObjetive(moves);
 
         return nextMove;
-
     }
 
     private Move RngMove(Move[] moves)
@@ -71,8 +69,10 @@ public class MyBot : IChessBot
             double targetCentreVal = Centreness(move.TargetSquare);
 
             int pieceVal = pieceValues[(int)(move.MovePieceType)]; //get the value of a piece from the defined pieceValues array 
-            double pieceCurrentDev = pieceVal * startCentreVal;    //gets the pieces current development score
-            double pieceTargetDev = pieceVal * targetCentreVal;    //gets the projected development score
+            
+            //pieceVal is not actually nessesary here currently, but is placeholder for a better way to get devIncrease
+            double pieceCurrentDev = pieceVal + startCentreVal;    //gets the pieces current development score
+            double pieceTargetDev = pieceVal + targetCentreVal;    //gets the projected development score
 
             double devIncrease = pieceTargetDev - pieceCurrentDev;
 
