@@ -1,27 +1,29 @@
 ﻿using ChessChallenge.API;
+using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 
 public class MyBot : IChessBot
 {
+    int[] pieceValues = { 0, 100, 300, 300, 500, 900, 10000 };
     public Move Think(Board board, Timer timer)
     {
         bool BotIsWhite = board.IsWhiteToMove;
         Move[] moves = board.GetLegalMoves();
 
         Move bestmove = moves[0];
-
-        double bestDevelopmentIncrease = 0;
+        int bestMoveValue = 0;
         foreach (Move move in moves)
         {
-            int developmentIncrease = CalculateDevelopmentIncrease(move);
-            if (developmentIncrease > bestDevelopmentIncrease)
+            Piece capturedPiece = board.GetPiece(move.TargetSquare);
+            int moveValue = pieceValues[(int)capturedPiece.PieceType] + CalculateDevelopmentIncrease(move);
+            if (moveValue > bestMoveValue)
             {
+                bestMoveValue = moveValue;
                 bestmove = move;
-                bestDevelopmentIncrease = developmentIncrease;
             }
 
         }
-        Console.WriteLine(bestDevelopmentIncrease);
+        Console.WriteLine(bestMoveValue);
         return bestmove;
     }
 
