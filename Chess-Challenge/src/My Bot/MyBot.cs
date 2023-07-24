@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Security.AccessControl;
 
 public class MyBot : IChessBot
 {
@@ -41,7 +42,7 @@ public class MyBot : IChessBot
 
         return nextMove;
     }
-    
+
     private Move ForwardestMove(Board board, Move[] moves)
     {
         bool BotIsWhite = board.IsWhiteToMove;
@@ -67,6 +68,47 @@ public class MyBot : IChessBot
 
     }
 
+    //sorry for yoinking yer code tree 
+    private Move CentreObjetive(Move[] moves)
+    {
+        //previously i tried to store these as 'linked' variables, where they were explicitly tied, using a dict... This is bloat, and doing this reduces error
+        Move mostDevMove = moves[0]; //this will store the move 
+        double mostDevInc = 0; //this will store the increase
+
+        foreach (Move move in moves)
+        {
+            double startCentreVal = Centreness(move.StartSquare);
+            double targetCentreVal = Centreness(move.TargetSquare);
+
+            int pieceVal = pieceValues[(int)(move.MovePieceType)]; //get the value of a piece from the defined pieceValues array 
+            double pieceCurrentDev = pieceVal * startCentreVal; //gets the pieces current development score
+            double pieceTargetDev = pieceVal * targetCentreVal; //gets the projected development score
+
+            double devIncrease = pieceTargetDev - pieceCurrentDev;
+
+            if (devIncrease > mostDevInc)
+            {
+                mostDevInc = devIncrease;
+                mostDevMove = move;
+            }
+        }
+        return mostDevMove;
+    }
+
+    private double Centreness(Square square) //formulas are subject to change
+    {
+        //possible quadratic = x^2  + 7x (gives a similar curve to other formula)
+        //double rankVal = 3.5 - Math.Abs(square.Rank - 3.5);
+        //double fileVal = 3.5 - Math.Abs(square.File - 3.5);
+        double rankVal = (square.Rank)^2 + (7 * square.Rank);
+        double fileVal = (square.File) ^ 2 + (7 * square.File);
+
+        return rankVal * fileVal;
+    }
+}
+
+    //im rewiritng this function and removing the weird bullshit bloat - legacy code
+    /*
     private Move CentreObjetive(Move[] moves)
     {
         Move mostDevelopedMove = moves[0];
@@ -84,8 +126,8 @@ public class MyBot : IChessBot
         foreach (Move move in moves)
         {
             //legacy formula: (3.5 - Math.Abs(move.TargetSquare.Rank - 3.5))
-            double rankDevVal = -(move.TargetSquare.Rank)^2 + 7 * TargetSquare.Rank; //formula that gives "centre" ranks (rows) a higher value, and outside "ranks" a lower one (from 0 - 3)
-            double fileDevVal = -(move.TargetSquare.File)^2 + 7 * TargetSquare.File; 
+            double rankDevVal = -(move.TargetSquare.Rank)^2 + 7 * move.TargetSquare.Rank; //formula that gives "centre" ranks (rows) a higher value, and outside "ranks" a lower one (from 0 - 3)
+            double fileDevVal = -(move.TargetSquare.File)^2 + 7 * move.TargetSquare.File; 
             //yea i dont think this worky
 
             double pieceVal = (rankDevVal * fileDevVal) * pieceValues[(int)move.MovePieceType];
@@ -124,3 +166,4 @@ public class MyBot : IChessBot
     }
 
 }
+    */
