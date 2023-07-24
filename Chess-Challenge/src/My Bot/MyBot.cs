@@ -15,7 +15,8 @@ public class MyBot : IChessBot
         foreach (Move move in moves)
         {
             Piece capturedPiece = board.GetPiece(move.TargetSquare);
-            int moveValue = pieceValues[(int)capturedPiece.PieceType] + CalculateDevelopmentIncrease(move);
+            int captureValue = pieceValues[(int)capturedPiece.PieceType];
+            int moveValue = captureValue + CalculateDevelopmentIncrease(move);
             if (moveValue > bestMoveValue)
             {
                 bestMoveValue = moveValue;
