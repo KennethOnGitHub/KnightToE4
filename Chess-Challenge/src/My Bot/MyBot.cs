@@ -126,15 +126,13 @@ public class MyBot : IChessBot
         {
             return true;
         }
-
         else if ((isAttacked) && (targetPieceVal >= pieceVal)) //might want to change the ">=" depending on the agression of the bot, or get it to factor in the state of the board (move many pieces etc.)
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
+        
+        return false;
+
 
     }
 
