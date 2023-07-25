@@ -8,7 +8,7 @@ using System.Security.AccessControl;
 public class MyBot : IChessBot
 {
     // Piece values: null, pawn, knight, bishop, rook, queen, king
-    int[] pieceValues = { 0, 100, 300, 300, 500, 900, 50 }; //these are arbitary because like... the king shouldnt really be pushing and developing :D
+    int[] pieceValues = { 0, 100, 300, 300, 500, 900, 10000 }; //these are arbitary because like... the king shouldnt really be pushing and developing :D
 
 
     public Move Think(Board board, Timer timer)
@@ -18,11 +18,31 @@ public class MyBot : IChessBot
 
         //Move nextMove = RngMove(moves);
         //Move nextMove = ForwardestMove(board, moves);
-        Move nextMove = CentreObjetive(moves);
+        //Move nextMove = CentreObjetive(moves);
 
+        //figure out the move using CentreObjective
+        //evauluate if this will place the piece in "danger", by seeing if it taking a piece will also get it taken (it is okay to do this if it "gains" value by taking)
+
+        Move nextMove = CentreObjetive(moves); //here is the "bottleneck", dont focus on MoveValueCheck, but make a better inital moveCheck
+        bool moveIsValuable = MoveValueCheck(nextMove, board); //Check above comment! only problem is that itll still hang pieces that are like... more than 1 move ahead. 
+
+        if (moveIsValuable) 
+        {
+            return nextMove;
+        }
+        
+        nextMove = RngMove(moves); //placeholder for a function that will be more conservative in checking for a "neutral" move (or just a better one?)
         return nextMove;
     }
 
+
+
+    
+
+ 
+
+
+    
     private Move RngMove(Move[] moves)
     {
         Random r = new();
@@ -68,8 +88,10 @@ public class MyBot : IChessBot
             double startCentreVal = Centreness(move.StartSquare);
             double targetCentreVal = Centreness(move.TargetSquare);
 
-            int pieceVal = pieceValues[(int)(move.MovePieceType)]; //get the value of a piece from the defined pieceValues array 
-            
+            //do an evaluation of the current piece, minus the other pieces value, if the target square is being attacked
+            //int pieceVal = pieceValues[(int)(move.MovePieceType)];
+            int pieceVal = pieceValues[(int)(move.CapturePieceType)];
+
             //pieceVal is not actually nessesary here currently, but is placeholder for a better way to get devIncrease
             double pieceCurrentDev = pieceVal + startCentreVal;    //gets the pieces current development score
             double pieceTargetDev = pieceVal + targetCentreVal;    //gets the projected development score
@@ -83,6 +105,22 @@ public class MyBot : IChessBot
             }
         }
         return mostDevMove;
+    }
+
+    private bool MoveValueCheck(Move move, Board board) //checks if target square is being attacked, and weighs up value of move
+    {
+
+        Square targetSquare = move.TargetSquare;
+        bool isAttacked = board.SquareIsAttackedByOpponent(targetSquare);
+        int pieceVal = pieceValues[(int)(move.MovePieceType)]; //"players" piece
+        int targetPieceVal = pieceValues[(int)(move.CapturePieceType)]; //targeted piece
+
+        if ((isAttacked) && (targetPieceVal >= pieceVal)) //might want to change the ">=" depending on the agression of the bot, or get it to factor in the state of the board (move many pieces etc.)
+        {
+            return true;
+        }
+        return false;
+
     }
 
     private double Centreness(Square square) //formulas are subject to change
