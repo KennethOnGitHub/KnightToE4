@@ -22,7 +22,8 @@ public class MyBot : IChessBot
         bool isMoveDraw = board.IsDraw();
 
         return nextMove;
-        /* //need to add this in later, but is good for now
+
+        /* //need to add this in later, but is good for now ->MAY NEED TO REMOVE THIS LATER AS IT IS REDUNDANT (possibly, ill ask tree :3)
         if ((moveIsValuable && !isMoveDraw))
         {
             return nextMove;
@@ -34,7 +35,7 @@ public class MyBot : IChessBot
     {
         int boardAdvantage = CalculateMaterialAdvantage(board, isWhite);
         Console.WriteLine(boardAdvantage);
-
+        //am adding more checks such as the "future checker" here in the future :>
         return boardAdvantage;
     }
 
