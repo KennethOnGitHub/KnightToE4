@@ -4,11 +4,12 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Security.AccessControl;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 public class MyBot : IChessBot
 {
     // Piece values: null, pawn, knight, bishop, rook, queen, king
-    int[] pieceValues = { 0, 100, 300, 300, 500, 900, 10000 }; //these are arbitary because like... the king shouldnt really be pushing and developing :D
+    int[] pieceValues = { 0, 100, 300, 400, 500, 900, 10000 }; //these are arbitary because like... the king shouldnt really be pushing and developing :D
 
 
     public Move Think(Board board, Timer timer)
@@ -24,15 +25,21 @@ public class MyBot : IChessBot
         //evauluate if this will place the piece in "danger", by seeing if it taking a piece will also get it taken (it is okay to do this if it "gains" value by taking)
 
         Move nextMove = CentreObjetive(moves); //here is the "bottleneck", dont focus on MoveValueCheck, but make a better inital moveCheck
-        bool moveIsValuable = MoveValueCheck(nextMove, board); //Check above comment! only problem is that itll still hang pieces that are like... more than 1 move ahead. 
 
-        if (moveIsValuable) 
+        bool moveIsValuable = MoveValueCheck(nextMove, board); //Check above comment! only problem is that itll still hang pieces that are like... more than 1 move ahead. 
+        bool isMoveDraw = board.IsDraw();
+
+        if ((moveIsValuable) && (!isMoveDraw))
         {
             return nextMove;
         }
-        
-        nextMove = RngMove(moves); //placeholder for a function that will be more conservative in checking for a "neutral" move (or just a better one?)
-        return nextMove;
+        else
+        {
+            Console.WriteLine("RANDOM MODE INITIATED");
+            nextMove = RngMove(moves); //placeholder for a function that will be more conservative in checking for a "neutral" move (or just a better one?)
+            return nextMove;
+        }
+
     }
 
 
@@ -115,11 +122,19 @@ public class MyBot : IChessBot
         int pieceVal = pieceValues[(int)(move.MovePieceType)]; //"players" piece
         int targetPieceVal = pieceValues[(int)(move.CapturePieceType)]; //targeted piece
 
-        if ((isAttacked) && (targetPieceVal >= pieceVal)) //might want to change the ">=" depending on the agression of the bot, or get it to factor in the state of the board (move many pieces etc.)
+        if (!isAttacked)
         {
             return true;
         }
-        return false;
+
+        else if ((isAttacked) && (targetPieceVal >= pieceVal)) //might want to change the ">=" depending on the agression of the bot, or get it to factor in the state of the board (move many pieces etc.)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
 
     }
 
