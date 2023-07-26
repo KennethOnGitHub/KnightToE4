@@ -3,45 +3,35 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
 
 public class MyBot : IChessBot
 {
-    int baseMaxDepth = 4;
+    int baseMaxDepth = 3;
     int[] pieceValues = { 0, 100, 300, 300, 500, 900, 10000 };
     bool botIsWhite;
 
     public Move Think(Board board, Timer timer)
     {
         botIsWhite = board.IsWhiteToMove;
+        Move[] allmoves = board.GetLegalMoves();
 
-          
-        /*
-        Move[] moves = board.GetLegalMoves();
-        int initialAdvantage = CalculateAdvantage(board);
-
-        Move bestmove = moves[0];
-        int bestMoveValue = 0;
-        foreach (Move move in moves)
+        Move bestmove = allmoves[0];
+        int bestMoveAdvantage = -int.MaxValue;
+        foreach (Move move in allmoves) //I hate this, this smells, refactor tmrw
         {
-            //The captured value is calculated here as that   
-            Piece capturedPiece = board.GetPiece(move.TargetSquare); 
-            int materialIncrease = pieceValues[(int)capturedPiece.PieceType];
-
-            int newAdvantage = CalculateAdvantage(board);  
-
-            int moveValue = newAdvantage - initialAdvantage;
-
-            if (moveValue > bestMoveValue)
+            board.MakeMove(move);
+            int moveAdvantage = Evaluate(board, 0);
+            board.UndoMove(move);
+            if (moveAdvantage > bestMoveAdvantage)
             {
-                bestMoveValue = moveValue;
+                bestMoveAdvantage = moveAdvantage;
                 bestmove = move;
             }
-
         }
-        Console.WriteLine(bestMoveValue);
         return bestmove;
-        */
     }
 
     private int Evaluate(Board board, int currentDepth)
@@ -61,8 +51,10 @@ public class MyBot : IChessBot
             boardValues[i] = Evaluate(board, currentDepth + 1);
             board.UndoMove(moves[i]);
         }
-
         return ourTurn ? boardValues.Max() : boardValues.Min();
+        //This should be reworked so that the "tree" stores the best moves as well so that we can save on calculations.
+        //Maybe make node objects??
+
         //personal notes: could possibly be optimised as Max and Min might iterate through the whole list again?
 
         /*Explanation:
