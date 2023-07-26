@@ -63,7 +63,23 @@ public class MyBot : IChessBot
         }
 
         return ourTurn ? boardValues.Max() : boardValues.Min();
-        //return highest value in boardvalues if it is our turn, return lowest if it is enemy turn
+        //personal notes: could possibly be optimised as Max and Min might iterate through the whole list again?
+
+        /*Explanation:
+        This is a recursive function, what happens is that it calculates the boardvalues at the very end on a board, then, works backwards.
+
+        Look at the diagram below, this function calculates the advantage of the top most board, then the onee below top board. The "parent" board's value is equal to either
+        the highest value child's value if it is our turn, as we would pick the best move, or the lowest value child if it is the enemy turn, as the enemy would pick the best move 
+        for them. This then repeats
+              []
+             /
+           []       
+          /  \_[]
+        []
+          \  /-[]
+           []
+             \_[]
+        */
 
     }
     private int CalculateAdvantage(Board board)
