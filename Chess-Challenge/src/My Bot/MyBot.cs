@@ -46,19 +46,24 @@ public class MyBot : IChessBot
 
     private int Evaluate(Board board, int currentDepth)
     {
+        bool ourTurn = botIsWhite == board.IsWhiteToMove;
         Move[] moves = board.GetLegalMoves();
         int[] boardValues = new int[moves.Length];
+
         if (currentDepth == baseMaxDepth)
         {
             return CalculateAdvantage(board);
         }
+
         for (int i = 0; i < boardValues.Length; i++)
         {
             board.MakeMove(moves[i]);
             boardValues[i] = Evaluate(board, currentDepth + 1);
             board.UndoMove(moves[i]);
         }
-        //return highest value in boardvalues if it is our turn, return lowest if it is enemy turn?
+
+        return ourTurn ? boardValues.Max() : boardValues.Min();
+        //return highest value in boardvalues if it is our turn, return lowest if it is enemy turn
 
     }
     private int CalculateAdvantage(Board board)
