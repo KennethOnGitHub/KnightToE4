@@ -19,11 +19,11 @@ public class MyBot : IChessBot
         Move[] allmoves = board.GetLegalMoves();
 
         Move bestmove = allmoves[0];
-        int bestMoveAdvantage = -int.MaxValue;
+        int bestMoveAdvantage = int.MinValue;
         foreach (Move move in allmoves) //I hate this, this smells, refactor tmrw
         {
             board.MakeMove(move);
-            int moveAdvantage = Evaluate(board, 0);
+            int moveAdvantage = Evaluate(board, 0, int.MaxValue, int.MinValue, true);
             board.UndoMove(move);
             if (moveAdvantage > bestMoveAdvantage)
             {
@@ -34,15 +34,18 @@ public class MyBot : IChessBot
         return bestmove;
     }
 
-    private int Evaluate(Board board, int currentDepth)
-    {
-        bool ourTurn = botIsWhite == board.IsWhiteToMove;
+    private int Evaluate(Board board, int currentDepth, int alpha, int beta, bool ourTurn)
+    {;
+        //ourturn can be calculated a number of ways, I just this one because I wanted to. But you could also look at if currentDepth even or odd?
         Move[] moves = board.GetLegalMoves();
-        int[] boardValues = new int[moves.Length];
 
         if (board.IsInCheckmate())
         {
-            return ourTurn ? -int.MaxValue : int.MinValue; //Returns the lowest value if we are checkmated and highest value if the enemy is mated
+            return ourTurn ? int.MinValue : int.MaxValue; //Returns the lowest value if we are checkmated and highest value if the enemy is mated
+        }
+        if (board.IsDraw())
+        {
+            return 0;
         }
 
         if (currentDepth == baseMaxDepth)
@@ -50,34 +53,42 @@ public class MyBot : IChessBot
             return CalculateAdvantage(board);
         }
 
-        for (int i = 0; i < boardValues.Length; i++)
+        if (ourTurn)
         {
-            board.MakeMove(moves[i]);
-            boardValues[i] = Evaluate(board, currentDepth + 1);
-            board.UndoMove(moves[i]);
+            int maxEval = int.MinValue;
+            foreach (Move move in moves)
+            {
+                board.MakeMove(move);
+                int evaluation = Evaluate(board, currentDepth + 1, alpha, beta, false);
+                maxEval = Math.Max(maxEval, evaluation);
+                alpha = Math.Max(alpha, evaluation); //Minor optimisation by using maxEval as the alpha?, same with minEval. Look into this further
+                board.UndoMove(move);
+                if (beta <= alpha)
+                {
+                    break;
+                }
+            }
+            return maxEval;
         }
-        Console.WriteLine(boardValues.Length);
-        return ourTurn ? boardValues.Max() : boardValues.Min(); //this results in a crash if there were no legal moves
-        //This should be reworked so that the "tree" stores the best moves as well so that we can save on calculations.
-        //Maybe make node objects??
+        else
+        {
+            int minEval = int.MaxValue;
+            foreach (Move move in moves)
+            {
+                board.MakeMove(move);
+                int evaluation = Evaluate(board, currentDepth + 1, alpha, beta, true);
+                minEval = Math.Min(minEval, evaluation);
+                beta = Math.Min(beta, evaluation);
+                board.UndoMove(move);
+                if (beta <= alpha)
+                {
+                    break;
+                }
+            }
+            return minEval;
+        }
 
-        //personal notes: could possibly be optimised as Max and Min might iterate through the whole list again?
-
-        /*Explanation:
-        This is a recursive function, what happens is that it calculates the boardvalues at the very end on a board, then, works backwards.
-
-        Look at the diagram below, this function calculates the advantage of the top most board, then the onee below top board. The "parent" board's value is equal to either
-        the highest value child's value if it is our turn, as we would pick the best move, or the lowest value child if it is the enemy turn, as the enemy would pick the best move 
-        for them. This then repeats
-              []
-             /
-           []       
-          /  \_[]
-        []
-          \  /-[]
-           []
-             \_[]
-        */
+        //This is alpha beta pruning, I can't explain it better than what's online anyways
 
     }
     private int CalculateAdvantage(Board board)
