@@ -42,7 +42,7 @@ public class MyBot : IChessBot
 
         if (board.IsInCheckmate())
         {
-            return ourTurn ? -int.MaxValue : int.MinValue;
+            return ourTurn ? -int.MaxValue : int.MinValue; //Returns the lowest value if we are checkmated and highest value if the enemy is mated
         }
 
         if (currentDepth == baseMaxDepth)
@@ -57,7 +57,7 @@ public class MyBot : IChessBot
             board.UndoMove(moves[i]);
         }
         Console.WriteLine(boardValues.Length);
-        return ourTurn ? boardValues.Max() : boardValues.Min(); //this is sometimes empty, possibly due to checkmate?
+        return ourTurn ? boardValues.Max() : boardValues.Min(); //this results in a crash if there were no legal moves
         //This should be reworked so that the "tree" stores the best moves as well so that we can save on calculations.
         //Maybe make node objects??
 
