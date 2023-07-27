@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 public class MyBot : IChessBot
 {
-    int baseMaxDepth = 3;
+    int baseMaxDepth = 4;
     int[] pieceValues = { 0, 100, 300, 300, 500, 900, 10000 };
     bool botIsWhite;
 
@@ -40,6 +40,11 @@ public class MyBot : IChessBot
         Move[] moves = board.GetLegalMoves();
         int[] boardValues = new int[moves.Length];
 
+        if (board.IsInCheckmate())
+        {
+            return ourTurn ? -int.MaxValue : int.MinValue;
+        }
+
         if (currentDepth == baseMaxDepth)
         {
             return CalculateAdvantage(board);
@@ -51,7 +56,8 @@ public class MyBot : IChessBot
             boardValues[i] = Evaluate(board, currentDepth + 1);
             board.UndoMove(moves[i]);
         }
-        return ourTurn ? boardValues.Max() : boardValues.Min();
+        Console.WriteLine(boardValues.Length);
+        return ourTurn ? boardValues.Max() : boardValues.Min(); //this is sometimes empty, possibly due to checkmate?
         //This should be reworked so that the "tree" stores the best moves as well so that we can save on calculations.
         //Maybe make node objects??
 
