@@ -1,6 +1,7 @@
 ﻿using ChessChallenge.API;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
@@ -11,15 +12,18 @@ public class MyBot : IChessBot
 {
     int baseMaxDepth = 4;
     int[] pieceValues = { 0, 100, 300, 300, 500, 900, 10000 };
-    bool botIsWhite;
+
 
     public Move Think(Board board, Timer timer)
     {
-        botIsWhite = board.IsWhiteToMove;
+        bool botIsWhite = board.IsWhiteToMove;
         Move[] allmoves = board.GetLegalMoves();
 
         Move bestmove = allmoves[0];
         int bestMoveAdvantage = int.MinValue;
+
+        PawnLineMaintained(board, botIsWhite);
+
         foreach (Move move in allmoves) //I hate this, this smells, refactor tmrw
         {
             board.MakeMove(move);
@@ -35,7 +39,7 @@ public class MyBot : IChessBot
     }
 
     private int Evaluate(Board board, int currentDepth, int alpha, int beta, bool ourTurn)
-    {;
+    {
         //ourturn can be calculated a number of ways, I just this one because I wanted to. But you could also look at if currentDepth even or odd?
         Move[] moves = board.GetLegalMoves();
 
@@ -68,6 +72,7 @@ public class MyBot : IChessBot
                     break;
                 }
             }
+            
             return maxEval;
         }
         else
@@ -85,6 +90,7 @@ public class MyBot : IChessBot
                     break;
                 }
             }
+                        
             return minEval;
         }
 
@@ -102,6 +108,7 @@ public class MyBot : IChessBot
 
     private int CalculateMaterialAdvantage(Board board)
     {
+        bool botIsWhite = board.IsWhiteToMove;
         PieceList[] pieceListList = board.GetAllPieceLists();
         int whiteMaterialValue = pieceListList.Take(6).Sum(list => list.Count * pieceValues[(int)list.TypeOfPieceInList]); //Sums values of first 6 lists (white pieces)
         int blackMaterialValue = pieceListList.Skip(6).Take(6).Sum(list => list.Count * pieceValues[(int)list.TypeOfPieceInList]); //Sums up next 6 lists (black pieces)
@@ -115,7 +122,9 @@ public class MyBot : IChessBot
 
     private int CalculatePositionalAdvantage(Board board) //Refactor this and material advantage due to reused code
     {
+
         return 0;
+        
     }
 
     private int CalculateDevelopmentIncrease(Move move)
@@ -145,6 +154,48 @@ public class MyBot : IChessBot
         
         return Centreness;
     }
+
+
+    private bool PawnLineMaintained(Board board, bool isWhite)
+    {
+        //if enough pawns are ahead(idk, say like 5), then dont bother checking PawnLineMaintained, and assume True.
+        //calculate this when the whole board is checked for where pawns are.
+
+
+        //draw a circle around each pawn and check if squares on either side contain a pawn.
+        //if it does, then you are good, the pawn line here is maintained :D
+        //if not, check the other squares.
+
+        //after u get the basic shit going, you should check the whole board for pawns, evaluate if more pawns are ahead or behind, and move pieces based off of that.
+        //if the pawn is ahead, move current pawn up to meet this.
+        //if it is behind, then move that one up to this one.
+
+        //right im fucking exhausted but like ill do this bit I SWEAR OKAY ILL DO IT TMMR >:(
+        //id say that you could convert the bitBoard to a binary value but idk how to do this and my connections down =D
+
+        ulong pawnBitboard = board.GetPieceBitboard(PieceType.Pawn, isWhite);
+        Console.WriteLine(pawnBitboard);
+
+        return true; //remove dis later :3
+
+    }
+
+
+    /*       //IGNORE THIS SHIT :D -> this will be used if pawns arent really developed by the bot (not even finished lmaooo)
+    private int pawnDevelopment(Board board) 
+    {
+        int movesPlayed = board.PlyCount;
+
+
+        if (movesPlayed > 10) //arbitary ass number for now, keep in mind that movesPlayed is total, not just ones played by the bot
+        {
+            PieceList[] listOfPawns = board.GetPieceList(PieceType.Pawn, botIsWhite);
+            int pawnDevelopment = listOfPawns.Length() * pieceValues[1] * (-movesPlayed + 11); //the less moves played, the higher the need for pawns to develop forwards. Will need to change formula if movesPlayed is changed (y = -x+11)
+
+            return pawnDevelopment;
+        }
+    }
+    */
 
 
 }
