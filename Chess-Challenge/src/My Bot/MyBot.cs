@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 public class MyBot : IChessBot
 {
@@ -175,8 +176,11 @@ public class MyBot : IChessBot
 
         ulong pawnBitboard = board.GetPieceBitboard(PieceType.Pawn, isWhite);
         Console.WriteLine(pawnBitboard);
-
-        return true; //remove dis later :3
+        pawnBitboard = (long)pawnBitboard; //CAST HERE BUT LIKE IT WONT FUKCING WORK
+        pawnBitboard = Convert.ToString(pawnBitboard, 2);
+        pawnBitboard = Regex.Replace(pawnBitboard, ".{8}", "$0,"); //stolen regex from here: https://stackoverflow.com/questions/9932096/add-separator-to-string-at-every-n-characters
+        Console.WriteLine(pawnBitboard); 
+        return true; //just for testing stuff
 
     }
 
