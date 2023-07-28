@@ -176,10 +176,45 @@ public class MyBot : IChessBot
 
         ulong pawnBitboard = board.GetPieceBitboard(PieceType.Pawn, isWhite);
         Console.WriteLine(pawnBitboard);
-        pawnBitboard = (long)pawnBitboard; //CAST HERE BUT LIKE IT WONT FUKCING WORK
-        pawnBitboard = Convert.ToString(pawnBitboard, 2);
-        pawnBitboard = Regex.Replace(pawnBitboard, ".{8}", "$0,"); //stolen regex from here: https://stackoverflow.com/questions/9932096/add-separator-to-string-at-every-n-characters
-        Console.WriteLine(pawnBitboard); 
+        //CAST HERE BUT LIKE IT WONT FUKCING WORK
+        long pawnBitboardLong = unchecked((long)pawnBitboard);
+        string pawnBitboardLongString = Convert.ToString((long)pawnBitboardLong, 2);
+        pawnBitboardLongString = Regex.Replace(pawnBitboardLongString, ".{8}", "$0 \n"); //stolen regex from here: https://stackoverflow.com/questions/9932096/add-separator-to-string-at-every-n-characters
+        Console.WriteLine(pawnBitboardLongString);
+
+
+        int pawnLeft;
+        int pawnRight;
+
+        foreach (Piece pawn in pawnBitboard) //iterate through all the pawns 
+        {
+            if (pawn.Square.File > 5) //if pawns are developed then we guicci bbg -> ALSO IDK IF THE COLOUR THAT THE BOT IS PLAYING WILL AFFECT WHAT "SIDE" IT SPAWNS ON, SO MAY HAVE TO CHECK FOR THAT ALSO
+            {
+                return true;
+            }
+
+            //checks if the pawn is on the edge of the board 
+            if (pawn.Square.Rank != 0)
+            {
+                pawnLeft = pawn.Square.Rank - 1;
+            }
+
+            if (pawn.Square.Rank != 7)
+            {
+                pawnRight = pawn.Square.Rank + 1;
+            }
+            else
+                pawnLeft = 0;
+                pawnRight = 7;
+
+            //now check if pawnLeft / pawnRight contain a pawn, if both yes then pawnLine is maintained
+            //check for all pieces, if not then return false and we good (for now)
+            //check comments around 175 for the other steps :p
+
+            
+        }
+
+        
         return true; //just for testing stuff
 
     }
