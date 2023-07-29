@@ -23,7 +23,6 @@ public class MyBot : IChessBot
         Move bestmove = allmoves[0];
         int bestMoveAdvantage = int.MinValue;
 
-        PawnLineMaintained(board, botIsWhite);
 
         foreach (Move move in allmoves) //I hate this, this smells, refactor tmrw
         {
