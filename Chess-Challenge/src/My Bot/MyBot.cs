@@ -8,6 +8,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks.Sources;
 
 public class MyBot : IChessBot
 {
@@ -17,9 +18,9 @@ public class MyBot : IChessBot
 
     public Move Think(Board board, Timer timer)
     {
-        botIsWhite = board.IsWhiteToMove;
-        Move[] allmoves = board.GetLegalMoves();
+        botIsWhite = IsOurTurn(board);
 
+        Move[] allmoves = board.GetLegalMoves();
         Move bestmove = allmoves[0];
         int bestMoveAdvantage = int.MinValue;
 
@@ -27,7 +28,7 @@ public class MyBot : IChessBot
         foreach (Move move in allmoves) //I hate this, this smells, refactor tmrw
         {
             board.MakeMove(move);
-            int moveAdvantage = Evaluate(board, 0, int.MinValue, int.MaxValue, false);
+            int moveAdvantage = NegaMax(board, 0, int.MinValue, int.MaxValue, botIsWhite);
             board.UndoMove(move);
             if (moveAdvantage > bestMoveAdvantage)
             {
@@ -38,65 +39,48 @@ public class MyBot : IChessBot
         return bestmove;
     }
 
-    private int Evaluate(Board board, int currentDepth, int alpha, int beta, bool ourTurn)
+    private bool IsOurTurn(Board board)
     {
-        //ourturn can be calculated a number of ways, I just this one because I wanted to. But you could also look at if currentDepth even or odd?
+        return board.IsWhiteToMove;
+    }
+
+
+    private int NegaMax(Board board, int currentDepth, int alpha, int beta, bool ourTurn) //ive called it alpha, but a name such as MaxVal may be more apropriate here
+    {
         Move[] moves = board.GetLegalMoves();
 
         if (board.IsInCheckmate())
         {
-            return ourTurn ? int.MinValue : int.MaxValue; //Returns the lowest value if we are checkmated and highest value if the enemy is mated
+            return ourTurn ? int.MinValue : int.MaxValue; 
         }
         if (board.IsDraw())
         {
             return 0;
         }
-
         if (currentDepth == baseMaxDepth)
         {
             return CalculateAdvantage(board);
         }
 
-        if (ourTurn)
+        //this pruning sucks mad dick
+        foreach (Move move in moves)
         {
-            int maxEval = int.MinValue;
-            foreach (Move move in moves)
+            //things to note here is that use -NegaMax to get eval, and we dont figure out the value of beta (not sure if this one is intentional but wikipedia calls for it)
+            board.MakeMove(move);
+            int eval = NegaMax(board, currentDepth + 1, alpha, beta, !ourTurn);
+            board.UndoMove(move);
+
+            if (eval >= beta)
             {
-                board.MakeMove(move);
-                int evaluation = Evaluate(board, currentDepth + 1, alpha, beta, false);
-                maxEval = Math.Max(maxEval, evaluation);
-                alpha = Math.Max(alpha, evaluation); //Minor optimisation by using maxEval as the alpha?, same with minEval. Look into this further
-                board.UndoMove(move);
-                if (beta <= alpha)
-                {
-                    break;
-                }
+                return beta;
             }
-            
-            return maxEval;
-        }
-        else
-        {
-            int minEval = int.MaxValue;
-            foreach (Move move in moves)
-            {
-                board.MakeMove(move);
-                int evaluation = Evaluate(board, currentDepth + 1, alpha, beta, true);
-                minEval = Math.Min(minEval, evaluation);
-                beta = Math.Min(beta, evaluation);
-                board.UndoMove(move);
-                if (beta <= alpha)
-                {
-                    break;
-                }
-            }
-                        
-            return minEval;
+
+            alpha = Math.Max(alpha, eval);
         }
 
-        //This is alpha beta pruning, I can't explain it better than what's online anyways
-
+        return alpha;
     }
+
     private int CalculateAdvantage(Board board)
     {
         int materialAdvantage = CalculateMaterialAdvantage(board);
