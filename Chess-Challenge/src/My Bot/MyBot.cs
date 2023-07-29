@@ -174,6 +174,13 @@ public class MyBot : IChessBot
         //right im fucking exhausted but like ill do this bit I SWEAR OKAY ILL DO IT TMMR >:(
         //id say that you could convert the bitBoard to a binary value but idk how to do this and my connections down =D
 
+
+
+
+
+        //DONT FUCKING NEED THIS BECAUSE PIECElISTS EXIST AAAAARHHHR
+         /*
+        
         ulong pawnBitboard = board.GetPieceBitboard(PieceType.Pawn, isWhite);
         Console.WriteLine(pawnBitboard);
         //CAST HERE BUT LIKE IT WONT FUKCING WORK
@@ -181,12 +188,14 @@ public class MyBot : IChessBot
         string pawnBitboardLongString = Convert.ToString((long)pawnBitboardLong, 2);
         pawnBitboardLongString = Regex.Replace(pawnBitboardLongString, ".{8}", "$0 \n"); //stolen regex from here: https://stackoverflow.com/questions/9932096/add-separator-to-string-at-every-n-characters
         Console.WriteLine(pawnBitboardLongString);
+        
+         */
 
+        int pawnLeft = 0;
+        int pawnRight = 0;
 
-        int pawnLeft;
-        int pawnRight;
-
-        foreach (Piece pawn in pawnBitboard) //iterate through all the pawns 
+        //def a more efficient way to do this but... uwu
+        foreach (Piece pawn in board.GetPieceList(PieceType.Pawn, isWhite)) //iterate through all the pawns 
         {
             if (pawn.Square.File > 5) //if pawns are developed then we guicci bbg -> ALSO IDK IF THE COLOUR THAT THE BOT IS PLAYING WILL AFFECT WHAT "SIDE" IT SPAWNS ON, SO MAY HAVE TO CHECK FOR THAT ALSO
             {
@@ -206,12 +215,13 @@ public class MyBot : IChessBot
             else
                 pawnLeft = 0;
                 pawnRight = 7;
+        
+            if ((pawnLeft == pawn.Square.File - 1) || (pawnRight == pawn.Square.File + 1)) //currently always returns true, no me gusta nada ;-;
+            {
+                Console.WriteLine("YIP DE FUCKING YE"); 
+                bool pawnLineMaintained = true;
+            }
 
-            //now check if pawnLeft / pawnRight contain a pawn, if both yes then pawnLine is maintained
-            //check for all pieces, if not then return false and we good (for now)
-            //check comments around 175 for the other steps :p
-
-            
         }
 
         
