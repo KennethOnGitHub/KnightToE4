@@ -13,11 +13,11 @@ public class MyBot : IChessBot
 {
     int baseMaxDepth = 4;
     int[] pieceValues = { 0, 100, 300, 300, 500, 900, 10000 };
-
+    bool botIsWhite;
 
     public Move Think(Board board, Timer timer)
     {
-        bool botIsWhite = board.IsWhiteToMove;
+        botIsWhite = board.IsWhiteToMove;
         Move[] allmoves = board.GetLegalMoves();
 
         Move bestmove = allmoves[0];
@@ -108,7 +108,6 @@ public class MyBot : IChessBot
 
     private int CalculateMaterialAdvantage(Board board)
     {
-        bool botIsWhite = board.IsWhiteToMove;
         PieceList[] pieceListList = board.GetAllPieceLists();
         int whiteMaterialValue = pieceListList.Take(6).Sum(list => list.Count * pieceValues[(int)list.TypeOfPieceInList]); //Sums values of first 6 lists (white pieces)
         int blackMaterialValue = pieceListList.Skip(6).Take(6).Sum(list => list.Count * pieceValues[(int)list.TypeOfPieceInList]); //Sums up next 6 lists (black pieces)
