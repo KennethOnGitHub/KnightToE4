@@ -27,7 +27,7 @@ public class MyBot : IChessBot
         foreach (Move move in allmoves) //I hate this, this smells, refactor tmrw
         {
             board.MakeMove(move);
-            int moveAdvantage = Evaluate(board, 0, int.MaxValue, int.MinValue, true);
+            int moveAdvantage = Evaluate(board, 0, int.MinValue, int.MaxValue, false);
             board.UndoMove(move);
             if (moveAdvantage > bestMoveAdvantage)
             {
