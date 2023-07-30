@@ -37,7 +37,7 @@ public class MyBot : IChessBot
                 bestmove = move;
             }
         }
-        Console.WriteLine("Best Advantage: ");
+        Console.WriteLine("Best Advantage: " + bestMoveAdvantage);
         return bestmove;
     }
 
@@ -65,19 +65,20 @@ public class MyBot : IChessBot
         }
 
         //this pruning sucks mad dick
+        int bestEval = int.MinValue;
         foreach (Move move in moves)
         {
             //things to note here is that use -NegaMax to get eval, and we dont figure out the value of beta (not sure if this one is intentional but wikipedia calls for it)
             board.MakeMove(move);
-            int eval = -NegaMax(board, currentDepth + 1, alpha, beta, !ourTurn);
+            bestEval = Math.Max(bestEval, -NegaMax(board, currentDepth + 1, -beta, -alpha, !ourTurn));
             board.UndoMove(move);
+            alpha = Math.Max(alpha, bestEval);
 
-            if (eval >= beta)
+            if (alpha >= beta)
             {
-                return beta;
+                break;
             }
 
-            alpha = Math.Max(alpha, eval);
         }
 
         return alpha;
