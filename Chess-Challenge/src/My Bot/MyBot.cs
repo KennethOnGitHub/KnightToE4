@@ -28,14 +28,16 @@ public class MyBot : IChessBot
         foreach (Move move in allmoves) //I hate this, this smells, refactor tmrw
         {
             board.MakeMove(move);
-            int moveAdvantage = NegaMax(board, 0, int.MinValue, int.MaxValue, botIsWhite);
+            int moveAdvantage = NegaMax(board, 0, int.MinValue, int.MaxValue, false);
             board.UndoMove(move);
+            Console.WriteLine("Advantage: " + moveAdvantage);
             if (moveAdvantage > bestMoveAdvantage)
             {
                 bestMoveAdvantage = moveAdvantage;
                 bestmove = move;
             }
         }
+        Console.WriteLine("Best Advantage: ");
         return bestmove;
     }
 
@@ -67,7 +69,7 @@ public class MyBot : IChessBot
         {
             //things to note here is that use -NegaMax to get eval, and we dont figure out the value of beta (not sure if this one is intentional but wikipedia calls for it)
             board.MakeMove(move);
-            int eval = NegaMax(board, currentDepth + 1, alpha, beta, !ourTurn);
+            int eval = -NegaMax(board, currentDepth + 1, alpha, beta, !ourTurn);
             board.UndoMove(move);
 
             if (eval >= beta)
