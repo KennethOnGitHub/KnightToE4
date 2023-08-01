@@ -84,7 +84,7 @@ public class MyBot : IChessBot
         return alpha;
     }
 
-    private int CalculateAdvantage(Board board)
+    public int CalculateAdvantage(Board board)
     {
         int materialAdvantage = CalculateMaterialAdvantage(board);
         int positionalAdvantage = CalculatePositionalAdvantage(board);
@@ -93,7 +93,7 @@ public class MyBot : IChessBot
         return boardValue;
     }
 
-    private int CalculateMaterialAdvantage(Board board)
+    public int CalculateMaterialAdvantage(Board board)
     {
         PieceList[] pieceListList = board.GetAllPieceLists();
         int whiteMaterialValue = pieceListList.Take(6).Sum(list => list.Count * pieceValues[(int)list.TypeOfPieceInList]); //Sums values of first 6 lists (white pieces)
