@@ -61,7 +61,7 @@ public class MyBot : IChessBot
         }
         if (currentDepth == baseMaxDepth)
         {
-            return CalculateAdvantage(board);
+            return CalculateAdvantage(board); //This needs to be negated or at least return the advantage of the opponent if the board is their move
         }
 
         //this pruning sucks mad dick
