@@ -15,7 +15,7 @@ namespace MyBotTest
             var bot = new MyBot();
             var board = ChessChallenge.API.Board.CreateBoardFromFEN(position);
 
-            int advantage = bot.CalculateMaterialAdvantage(board);
+            int advantage = bot.CalculateMaterialAdvantageOfCurrentPlayer(board);
 
             Assert.AreEqual(0, advantage);
 
@@ -28,7 +28,7 @@ namespace MyBotTest
             var bot = new MyBot();
             var board = ChessChallenge.API.Board.CreateBoardFromFEN(position);
 
-            int advantage = bot.CalculateMaterialAdvantage(board);
+            int advantage = bot.CalculateMaterialAdvantageOfCurrentPlayer(board);
 
             Assert.AreEqual(-2100, advantage);//botiswhite messes with this I think?
         }

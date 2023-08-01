@@ -86,14 +86,14 @@ public class MyBot : IChessBot
 
     public int CalculateAdvantage(Board board)
     {
-        int materialAdvantage = CalculateMaterialAdvantage(board);
+        int materialAdvantage = CalculateMaterialAdvantageOfCurrentPlayer(board);
         int positionalAdvantage = CalculatePositionalAdvantage(board);
         int boardValue = materialAdvantage + positionalAdvantage;
 
         return boardValue;
     }
 
-    public int CalculateMaterialAdvantage(Board board)
+    public int CalculateMaterialAdvantageOfCurrentPlayer(Board board)
     {
         PieceList[] pieceListList = board.GetAllPieceLists();
         int whiteMaterialValue = pieceListList.Take(6).Sum(list => list.Count * pieceValues[(int)list.TypeOfPieceInList]); //Sums values of first 6 lists (white pieces)
@@ -101,7 +101,7 @@ public class MyBot : IChessBot
 
         int whiteMaterialAdvantage = whiteMaterialValue - blackMaterialValue;
         int blackMaterialAdvantage = blackMaterialValue - whiteMaterialValue;
-        int materialAdvantage = botIsWhite ? whiteMaterialAdvantage: blackMaterialAdvantage;
+        int materialAdvantage = board.IsWhiteToMove ? whiteMaterialAdvantage: blackMaterialAdvantage;
 
         return materialAdvantage;
     }
