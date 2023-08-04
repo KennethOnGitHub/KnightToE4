@@ -48,6 +48,7 @@ public class MyBot : IChessBot
     private int NegaMax(Board board, int currentDepth, int alpha, int beta, bool ourTurn) //ive called it alpha, but a name such as MaxVal may be more apropriate here
     {
         Move[] moves = board.GetLegalMoves();
+        int eval = 0;
 
         if (board.IsInCheckmate())
         {
@@ -57,8 +58,9 @@ public class MyBot : IChessBot
         {
             return 0;
         }
-        if (currentDepth == baseMaxDepth)
+        if ((currentDepth == baseMaxDepth) || currentDepth == 0)
         {
+            currentDepth++;
             return CalculateAdvantage(board);
         }
 
@@ -67,18 +69,16 @@ public class MyBot : IChessBot
         {
             //things to note here is that use -NegaMax to get eval, and we dont figure out the value of beta (not sure if this one is intentional but wikipedia calls for it)
             board.MakeMove(move);
-            int eval = NegaMax(board, currentDepth + 1, alpha, beta, !ourTurn);
+            eval = Math.Max(eval,-NegaMax(board, currentDepth + 1, -alpha, -beta, ourTurn));
             board.UndoMove(move);
 
             if (eval >= beta)
             {
                 return beta;
             }
-
-            alpha = Math.Max(alpha, eval);
         }
 
-        return alpha;
+        return eval;
     }
 
     private int CalculateAdvantage(Board board)
