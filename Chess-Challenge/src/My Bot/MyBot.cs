@@ -30,12 +30,14 @@ public class MyBot : IChessBot
             board.MakeMove(move);
             int moveAdvantage = NegaMax(board, 0, int.MinValue, int.MaxValue, botIsWhite);
             board.UndoMove(move);
+            Console.WriteLine("Advantage: " + moveAdvantage);
             if (moveAdvantage > bestMoveAdvantage)
             {
                 bestMoveAdvantage = moveAdvantage;
                 bestmove = move;
             }
         }
+        Console.WriteLine("Best Advantage: " + bestMoveAdvantage);
         return bestmove;
     }
 
@@ -48,7 +50,6 @@ public class MyBot : IChessBot
     private int NegaMax(Board board, int currentDepth, int alpha, int beta, bool ourTurn) //ive called it alpha, but a name such as MaxVal may be more apropriate here
     {
         Move[] moves = board.GetLegalMoves();
-        int eval = 0;
 
         if (board.IsInCheckmate())
         {
@@ -60,28 +61,30 @@ public class MyBot : IChessBot
         }
         if ((currentDepth == baseMaxDepth) || currentDepth == 0)
         {
-            currentDepth++;
             return CalculateAdvantage(board);
         }
 
         //this pruning sucks mad dick
+        int bestEval = int.MinValue;
         foreach (Move move in moves)
         {
             //things to note here is that use -NegaMax to get eval, and we dont figure out the value of beta (not sure if this one is intentional but wikipedia calls for it)
             board.MakeMove(move);
-            eval = Math.Max(eval,-NegaMax(board, currentDepth + 1, -alpha, -beta, ourTurn));
+            bestEval = Math.Max(bestEval, -NegaMax(board, currentDepth + 1, -alpha, -beta, ourTurn));
             board.UndoMove(move);
+            alpha = Math.Max(alpha, bestEval);
 
-            if (eval >= beta)
+            if (bestEval >= beta)
             {
                 return beta;
             }
+
         }
 
-        return eval;
+        return bestEval;
     }
 
-    private int CalculateAdvantage(Board board)
+    public int CalculateAdvantage(Board board)
     {
         int materialAdvantage = CalculateMaterialAdvantage(board);
         int positionalAdvantage = CalculatePositionalAdvantage(board);
@@ -90,7 +93,7 @@ public class MyBot : IChessBot
         return boardValue;
     }
 
-    private int CalculateMaterialAdvantage(Board board)
+    public int CalculateMaterialAdvantage(Board board)
     {
         PieceList[] pieceListList = board.GetAllPieceLists();
         int whiteMaterialValue = pieceListList.Take(6).Sum(list => list.Count * pieceValues[(int)list.TypeOfPieceInList]); //Sums values of first 6 lists (white pieces)
