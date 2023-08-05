@@ -28,7 +28,7 @@ public class MyBot : IChessBot
         foreach (Move move in allmoves) //I hate this, this smells, refactor tmrw
         {
             board.MakeMove(move);
-            int moveAdvantage = NegaMax(board, 0, int.MinValue, int.MaxValue, botIsWhite);
+            int moveAdvantage = -NegaMax(board, 0, int.MinValue, int.MaxValue, false);
             board.UndoMove(move);
             Console.WriteLine("Advantage: " + moveAdvantage);
             if (moveAdvantage > bestMoveAdvantage)
@@ -59,24 +59,22 @@ public class MyBot : IChessBot
         {
             return 0;
         }
-        if ((currentDepth == baseMaxDepth) || currentDepth == 0)
+        if (currentDepth == baseMaxDepth)
         {
             return CalculateAdvantage(board);
         }
 
-        //this pruning sucks mad dick
         int bestEval = int.MinValue;
         foreach (Move move in moves)
         {
             //things to note here is that use -NegaMax to get eval, and we dont figure out the value of beta (not sure if this one is intentional but wikipedia calls for it)
             board.MakeMove(move);
-            bestEval = Math.Max(bestEval, -NegaMax(board, currentDepth + 1, -alpha, -beta, ourTurn));
+            bestEval = Math.Max(bestEval, -NegaMax(board, currentDepth + 1, -beta, -alpha, !ourTurn));
             board.UndoMove(move);
             alpha = Math.Max(alpha, bestEval);
-
-            if (bestEval >= beta)
+            if (alpha >= beta)
             {
-                return beta;
+                break;
             }
 
         }
