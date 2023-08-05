@@ -25,7 +25,7 @@ public class MyBot : IChessBot
         int bestMoveAdvantage = int.MinValue;
 
 
-        foreach (Move move in allmoves) //I hate this, this smells, refactor tmrw
+        foreach (Move move in allmoves)
         {
             board.MakeMove(move);
             int moveAdvantage = -NegaMax(board, 0, int.MinValue, int.MaxValue, false);
@@ -47,13 +47,13 @@ public class MyBot : IChessBot
     }
 
 
-    public int NegaMax(Board board, int currentDepth, int alpha, int beta, bool ourTurn) //ive called it alpha, but a name such as MaxVal may be more apropriate here
+    public int NegaMax(Board board, int currentDepth, int alpha, int beta, bool ourTurn)
     {
         Move[] moves = board.GetLegalMoves();
 
         if (board.IsInCheckmate())
         {
-            return ourTurn ? int.MinValue : int.MaxValue; 
+            return int.MinValue+1; //bit scuffed, the +1 prevents overflow when it is multiplied by -1
         }
         if (board.IsDraw())
         {
