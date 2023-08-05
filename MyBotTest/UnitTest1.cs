@@ -56,5 +56,17 @@ namespace MyBotTest
 
             Assert.AreEqual(800, advantage);
         }
+
+        [TestMethod]
+        public void NegaMax_MateIn1_intMax()
+        {
+            string position = "rnbqkbnr/ppppp2p/5p2/6p1/4P3/3P4/PPP2PPP/RNBQKBNR w KQkq - 0 3";
+            var bot = new MyBot();
+            var board = ChessChallenge.API.Board.CreateBoardFromFEN(position);
+
+            int eval = bot.NegaMax(board, 0, int.MinValue, int.MaxValue, true);
+
+            Assert.AreEqual(int.MaxValue, eval);
+        }
     }
 }

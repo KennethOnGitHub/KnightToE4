@@ -47,7 +47,7 @@ public class MyBot : IChessBot
     }
 
 
-    private int NegaMax(Board board, int currentDepth, int alpha, int beta, bool ourTurn) //ive called it alpha, but a name such as MaxVal may be more apropriate here
+    public int NegaMax(Board board, int currentDepth, int alpha, int beta, bool ourTurn) //ive called it alpha, but a name such as MaxVal may be more apropriate here
     {
         Move[] moves = board.GetLegalMoves();
 
